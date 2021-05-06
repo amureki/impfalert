@@ -6,7 +6,7 @@ import urllib.request
 from time import sleep
 from datetime import date
 
-SLEEP_TIME = os.environ.get('SLEEP_TIME', 20)
+SLEEP_TIME = os.environ.get('SLEEP_TIME', 60)
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_CHAT_ID = os.environ.get('TELEGRAM_BOT_CHAT_ID')
 HEALTHCHECK_TOKEN = os.environ.get('HEALTHCHECK_TOKEN')
