@@ -8,6 +8,7 @@ from datetime import date
 SLEEP_TIME = os.environ.get('SLEEP_TIME', 20)
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_CHAT_ID = os.environ.get('TELEGRAM_BOT_CHAT_ID')
+HEALTHCHECK_TOKEN = os.environ.get('HEALTHCHECK_TOKEN')
 
 EARLIEST_APPOINTMENT_DATE = str(date.today())
 
@@ -87,4 +88,6 @@ if __name__ == '__main__':
     while True:
         parse_urls()
         print('.....................')
-        sleep(SLEEP_TIME)
+        sleep(int(SLEEP_TIME))
+        if HEALTHCHECK_TOKEN:
+            urllib.request.urlopen('https://hc-ping.com/{}'.format(HEALTHCHECK_TOKEN))
