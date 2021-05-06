@@ -1,0 +1,1 @@
+{'total': 0, 'availabilities': [{'date': '2021-05-14', 'slots': []}, {'date': '2021-05-15', 'slots': []}, {'date': '2021-05-16', 'slots': []}, {'date': '2021-05-17', 'slots': []}, {'date': '2021-05-18', 'slots': []}], 'next_slot': '2021-05-31'}

@@ -1,0 +1,1 @@
+{'availabilities': [], 'total': 0, 'reason': 'no_availabilities', 'message': 'Diese Termine stehen zu einem späteren Zeitpunkt wieder für eine Online-Buchung zur Verfügung. ', 'number_future_vaccinations': 83771}
