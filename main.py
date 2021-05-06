@@ -1,7 +1,8 @@
 import json
 import os
-import urllib.request
+from urllib.error import URLError
 import urllib.parse
+import urllib.request
 from time import sleep
 from datetime import date
 
@@ -89,7 +90,11 @@ def parse_urls():
             url,
             headers=DOCTOLIB_API_HEADERS
         )
-        response = urllib.request.urlopen(request)
+        try:
+            response = urllib.request.urlopen(request)
+        except URLError as e:
+            print(f'Error: {e}')
+            return
         data = response.read().decode('utf-8')
         json_data = json.loads(data)
         availabilities = json_data['availabilities']
