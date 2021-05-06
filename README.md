@@ -14,3 +14,5 @@ export TELEGRAM_BOT_CHAT_ID=
 ```
 
 3. Run `python main.py` somewhere. No external packages required, plain Python 3 code.
+
+4. (optional) You can add `HEALTHCHECK_TOKEN` (https://healthchecks.io/) to ensure that your script is up and running.
