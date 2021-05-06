@@ -9,6 +9,7 @@ SLEEP_TIME = os.environ.get('SLEEP_TIME', 20)
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TELEGRAM_BOT_CHAT_ID = os.environ.get('TELEGRAM_BOT_CHAT_ID')
 HEALTHCHECK_TOKEN = os.environ.get('HEALTHCHECK_TOKEN')
+SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
 
 EARLIEST_APPOINTMENT_DATE = str(date.today())
 
@@ -42,6 +43,9 @@ DOCTOLIB_API_HEADERS = {
 
 
 def send_telegram_message(message):
+    if not TELEGRAM_BOT_TOKEN:
+        return
+
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -53,6 +57,24 @@ def send_telegram_message(message):
     }
 
     request_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+    request = urllib.request.Request(request_url, data=json.dumps(data).encode(), headers=headers)
+    response = urllib.request.urlopen(request)
+    data = response.read().decode('utf-8')
+    print(data)
+
+
+def send_slack_message(message):
+    if not SLACK_WEBHOOK_URL:
+        return
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+    data = {
+        "text": message,
+    }
+
+    request_url = SLACK_WEBHOOK_URL
     request = urllib.request.Request(request_url, data=json.dumps(data).encode(), headers=headers)
     response = urllib.request.urlopen(request)
     data = response.read().decode('utf-8')
@@ -82,6 +104,7 @@ def parse_urls():
             print(f'************************ATTENTION!!!************************')
             print(alert_message)
             send_telegram_message(alert_message)
+            send_slack_message(alert_message)
 
 
 if __name__ == '__main__':
