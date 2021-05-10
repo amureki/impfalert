@@ -65,6 +65,10 @@ def parse_urls():
         verbose_name = name.replace("_", " ").title()
         print(f"Checking {verbose_name}...")
         data = send_doctolib_request(params=params, date=EARLIEST_APPOINTMENT_DATE)
+        if data is None:
+            print(f"Failed to check {verbose_name}...")
+            continue
+
         availabilities = data["availabilities"]
         total = data["total"]
 
@@ -85,6 +89,10 @@ def parse_urls():
             next_slots_data = send_doctolib_request(
                 params=params, date=proposed_next_slot_date
             )
+            if next_slots_data is None:
+                print(f"Failed to check {verbose_name}...")
+                continue
+
             availabilities = next_slots_data["availabilities"]
             total = next_slots_data["total"]
             for (
