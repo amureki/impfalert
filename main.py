@@ -7,6 +7,7 @@ import urllib.request
 from time import sleep
 from datetime import date
 
+from cache import update_cache, exists_in_cache, slots_cache
 from notifications import send_alerts
 
 SLEEP_TIME = os.environ.get("SLEEP_TIME", 60)
@@ -61,12 +62,13 @@ def send_doctolib_request(params, date) -> Optional[dict]:
 
 
 def parse_urls():
-    for name, params in PRACTICE_PARAMS.items():
-        verbose_name = name.replace("_", " ").title()
-        print(f"Checking {verbose_name}...")
+    print(f'cache: {slots_cache}')
+    for practice_name, params in PRACTICE_PARAMS.items():
+        practice_verbose_name = practice_name.replace("_", " ").title()
+        print(f"Checking {practice_verbose_name}...")
         data = send_doctolib_request(params=params, date=EARLIEST_APPOINTMENT_DATE)
         if data is None:
-            print(f"Failed to check {verbose_name}...")
+            print(f"Failed to check {practice_verbose_name}...")
             continue
 
         availabilities = data["availabilities"]
@@ -78,19 +80,20 @@ def parse_urls():
             print(f"Not available: {reason}. Msg: {message}")
             continue
 
-        practice_booking_url = f"https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-{PRACTICE_MAPPING[name]}"
+        practice_booking_url = f"https://www.doctolib.de/institut/berlin/ciz-berlin-berlin?pid=practice-{PRACTICE_MAPPING[practice_name]}"
         alert_message = (
-            f"Impf alert in {verbose_name}!\n\n" f"Book at: {practice_booking_url}."
+            f"Impf alert in {practice_verbose_name}!\n\n" f"Book at: {practice_booking_url}."
         )
 
         proposed_next_slot_date = data.get("next_slot")
         all_available_dates = []
+        new_available_dates = []
         if proposed_next_slot_date:
             next_slots_data = send_doctolib_request(
                 params=params, date=proposed_next_slot_date
             )
             if next_slots_data is None:
-                print(f"Failed to check {verbose_name}...")
+                print(f"Failed to check {practice_verbose_name}...")
                 continue
 
             availabilities = next_slots_data["availabilities"]
@@ -100,14 +103,22 @@ def parse_urls():
             ) in availabilities:  # dict_keys(['date', 'slots', 'substitution'])
                 all_available_dates.append(availability.get("date"))
 
-            if all_available_dates:
-                verbose_dates = ", ".join(all_available_dates)
+            for available_date in all_available_dates:
+                if not exists_in_cache(practice_name, available_date):
+                    new_available_dates.append(available_date)
+
+            if new_available_dates:
+                update_cache(practice_name, new_available_dates)
+                verbose_dates = ", ".join(new_available_dates)
                 alert_message = (
-                    f"Impf alert in {verbose_name}!\n"
+                    f"Impf alert in {practice_verbose_name}!\n"
                     f"Earliest available dates: {verbose_dates}.\n"
                     f"Amount of slots: {total}.\n\n"
                     f"Book at: {practice_booking_url}."
                 )
+
+        if all_available_dates and not new_available_dates:
+            return
 
         print(data)
         print(f"************************ATTENTION************************")
