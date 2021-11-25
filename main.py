@@ -122,9 +122,13 @@ def parse_urls():
 
 
 if __name__ == "__main__":
-    while True:
-        parse_urls()
-        print(".....................")
-        sleep(int(SLEEP_TIME))
-        if HEALTHCHECK_TOKEN:
-            urllib.request.urlopen("https://hc-ping.com/{}".format(HEALTHCHECK_TOKEN))
+    try:
+        send_alerts("Bot online...")
+        while True:
+            parse_urls()
+            print(".....................")
+            sleep(int(SLEEP_TIME))
+            if HEALTHCHECK_TOKEN:
+                urllib.request.urlopen("https://hc-ping.com/{}".format(HEALTHCHECK_TOKEN))
+    finally:
+        send_alerts("Bot offline...")
