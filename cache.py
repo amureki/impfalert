@@ -1,13 +1,10 @@
 import datetime
 
 slots_cache = {
-    "biontech_arena": {},
     "biontech_messe": {},
+    "moderna_messe":  {},
     "biontech_tegel": {},
-    "biontech_velodrom": {},
-    "erikahess_moderna": {},
-    "tegel_moderna": {},
-    "tempelhof_moderna": {},
+    "moderna_tegel":  {},
 }
 
 
